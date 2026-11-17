@@ -154,3 +154,14 @@ th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: l
 .toast-error { background: var(--bad); color: #fff; }
 .toast-action { background: none; border: 0; color: inherit; font-weight: 700; text-decoration: underline; min-height: var(--tap); padding: 0 8px; cursor: pointer; }
 .tabbar span { font-size: 18px; }
+.app-main > * { min-width: 0; }
+.kpis > * { min-width: 0; }
+.kpi .value { font-size: 18px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); margin: 0 0 8px; padding: 0; list-style: none; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.suggest { border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: grid; gap: 6px; }
+.suggest h3 { font-size: 15px; margin: 0; }
+.delta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+:root { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --chart-text: #52514e; --chart-grid: #e4e3df; }
+@media (prefers-color-scheme: dark) { :root { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --chart-text: #c3c2b7; --chart-grid: #383835; } }

@@ -3,13 +3,13 @@ import { breakEven, projectPlan, projectScenario, soldSummary, totalPlannedQty, 
 import { formatNumber, formatVnd } from '../lib/format'
 import { countChanged, type Assumptions } from '../state'
 import { How, Progress } from './ui'
-import { type ReactNode } from 'react'
+import { ScenarioChart, SuggestionsCard } from './Insights'
 
-type Props = { a: Assumptions; orders: Order[]; goTo: (tab: string) => void; extra?: ReactNode }
+type Props = { a: Assumptions; orders: Order[]; goTo: (tab: string) => void }
 
 const signClass = (n: number) => (n > 0 ? 'positive' : n < 0 ? 'negative' : '')
 
-export function OverviewTab({ a, orders, goTo, extra }: Props) {
+export function OverviewTab({ a, orders, goTo }: Props) {
   const { products, fixedCosts, scenarios } = a
   const be = breakEven(products, fixedCosts)
   const plannedTotal = totalPlannedQty(products)
@@ -181,11 +181,13 @@ export function OverviewTab({ a, orders, goTo, extra }: Props) {
         <p className="note">Cột "Kế hoạch" bán đúng số phần dự kiến trong bảng sản phẩm, để tham khảo.</p>
       </section>
 
-      {extra}
+      <ScenarioChart products={products} costs={fixedCosts} scenarios={scenarios} />
 
       {cols.slice(0, scenarios.length).map((c, i) => (
         <ScenarioCard key={c.name} name={c.name} note={scenarios[i].note} sub={c.sub} p={c.p} visitors={scenarios[i].visitors} rate={scenarios[i].buyRatePct} />
       ))}
+
+      <SuggestionsCard products={products} costs={fixedCosts} scenarios={scenarios} />
     </>
   )
 }
