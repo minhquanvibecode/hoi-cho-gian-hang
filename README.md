@@ -2,9 +2,18 @@
 
 Ứng dụng web tiếng Việt giúp nhóm sinh viên lập kế hoạch gian hàng đồ uống và bánh đóng gói: chỉnh giả định, ghi đơn bán thử, biết cần bán bao nhiêu phần để hòa vốn và so sánh kịch bản lượng khách.
 
-## Link demo
-- **https://minhquanvibecode.github.io/hoi-cho-gian-hang/** (GitHub Pages, tự cập nhật mỗi lần push lên `main`)
-- Mở trên điện thoại là dùng được ngay, không cần đăng nhập. Tab **Giả định** → **Nạp dữ liệu mẫu** để khôi phục dữ liệu BTC.
+## Link demo và cách mở
+**https://minhquanvibecode.github.io/hoi-cho-gian-hang/**
+
+Mở trên điện thoại hoặc máy tính là dùng được ngay: không cần đăng nhập, không cần cài đặt.
+
+1. Mở link trên bằng Chrome hoặc Safari. Lưu ý: link phải có đuôi `/hoi-cho-gian-hang/`; trang gốc `minhquanvibecode.github.io` không có nội dung.
+2. Tab **Giả định** → bấm **Nạp dữ liệu mẫu** → **Nạp dữ liệu mẫu** để có đúng dữ liệu BTC.
+3. Tab **Tổng quan**: dải số Hòa vốn / Lãi Thận trọng / Lãi Cơ sở ở đầu trang; kéo thanh **Lượt khách**, **Tỷ lệ mua** để xem kết quả đổi theo.
+4. Tab **Đơn thử**: chạm một món → chọn số lượng → **Lưu đơn**.
+5. Quay lại **Tổng quan** để so sánh hai kịch bản (bảng, biểu đồ, thẻ từng kịch bản, khối "Cách tính").
+
+Dữ liệu chỉ lưu trên trình duyệt đang dùng (localStorage). Trang được build và đăng lại tự động mỗi lần đẩy code lên nhánh `main`, sau khi toàn bộ test qua.
 
 ## Tính năng
 ### Theo yêu cầu đề
@@ -19,7 +28,9 @@
 - **Giả định có nguồn gốc**: mỗi ô có nhãn "BTC" hoặc "Đã chỉnh" (tô vàng, ghi giá trị BTC, nút ↺ trả về); banner ở Tổng quan báo đang chỉnh bao nhiêu ô.
 - **Biên an toàn**: mỗi kịch bản vượt/thiếu bao nhiêu phần so với hòa vốn, quy ra số lượt khách có thể hụt mà vẫn không lỗ.
 - **Kế hoạch so với thực tế**: thanh tiến độ đơn thử đã bán / số phần hòa vốn.
-- **Biểu đồ** cột so sánh doanh thu – tổng chi phí – lợi nhuận giữa hai kịch bản.
+- **Dải số chính** ở đầu Tổng quan (Hòa vốn, Lãi Thận trọng, Lãi Cơ sở), thấy ngay ở màn hình đầu trên điện thoại.
+- **Biểu đồ** cột so sánh doanh thu – tổng chi phí – lợi nhuận của Thận trọng, Cơ sở và Kế hoạch (khớp bảng so sánh); cột nào cũng có nhãn số, lợi nhuận âm thì cột đỏ dưới trục 0.
+- **Báo lỗ rõ ràng**: khi lãi < 0, mọi nơi hiện "Lỗ X đ · thiếu N phần để hòa vốn" và dấu "−", không chỉ dựa vào màu đỏ.
 - **Lọc đơn bán thử** theo sản phẩm, có tổng số đơn, số phần, doanh thu theo bộ lọc.
 - **Ghi đơn nhanh tại quầy**: chạm ô sản phẩm (hiện giá và số đã bán) + nút số lượng nhanh 1/2/3/5 → 2–3 lần chạm là lưu xong một đơn.
 - **Thanh trượt lượt khách và tỷ lệ mua** ngay trên Tổng quan: kéo là thấy số phần, lợi nhuận, biên an toàn đổi ngay; giá trị lưu chung với tab Giả định.
@@ -90,20 +101,52 @@ Giả định của đội: mỗi khách mua 1 phần; mức thay đổi trong p
 | Giá ≤ chi phí | Cảnh báo dưới ô; lãi góp bình quân ≤ 0 → "Không thể hòa vốn" |
 
 ## Công nghệ
-Vite + React + TypeScript · Vitest · lưu trên trình duyệt (localStorage) · triển khai GitHub Pages (GitHub Actions). Không có máy chủ, không thu thập dữ liệu cá nhân.
+| Phần | Công nghệ |
+|---|---|
+| Giao diện | React 19 + TypeScript 7, CSS thuần (thiết kế điện thoại 360px trước) |
+| Build | Vite 8 (`base: './'`, chạy được ở mọi thư mục con) |
+| Kiểm thử | Vitest 5 (23 test tính toán), Playwright (kiểm tra điện thoại, kịch bản demo) |
+| Lưu dữ liệu | localStorage của trình duyệt, có phiên bản dữ liệu |
+| Triển khai | GitHub Pages qua GitHub Actions (`.github/workflows/pages.yml`) |
 
-## Chạy trên máy
+Không có máy chủ, không đăng nhập, không khoá bí mật, không thu thập dữ liệu cá nhân.
+
+## Cài đặt và chạy trên máy
+Cần Node.js 20 trở lên (máy chủ build dùng Node 22) và git.
+
 ```bash
+git clone https://github.com/minhquanvibecode/hoi-cho-gian-hang.git
+cd hoi-cho-gian-hang
 npm install
 npm run dev        # mở http://localhost:5173
-npm test           # chạy kiểm thử tính toán
-npm run build      # build ra thư mục dist/
 ```
+
+Các lệnh khác:
+
+```bash
+npm test           # chạy 23 test tính toán
+npm run typecheck  # kiểm tra kiểu TypeScript
+npm run build      # build ra thư mục dist/ (mở bằng bất kỳ máy chủ tĩnh nào)
+npm run preview    # xem bản build tại http://localhost:4173
+```
+
+## Cấu trúc thư mục chính
+| Đường dẫn | Nội dung |
+|---|---|
+| `src/config/seed.ts` | Dữ liệu mẫu BTC, chép nguyên văn từ đề |
+| `src/lib/calc/` | Hàm tính hòa vốn, kịch bản, gợi ý + test |
+| `src/components/` | Ba tab Tổng quan, Giả định, Đơn thử |
+| `scripts/` | Kiểm tra điện thoại, kịch bản demo tự động, chụp minh chứng |
+| `evidence/` | Ảnh và video minh chứng |
+| `docs/` | Phân tích đề, nhật ký thời gian |
 
 ## Ảnh chụp (khổ 360px)
 | Tổng quan | Giả định | Đơn thử |
 |---|---|---|
 | ![Tổng quan](evidence/360-tong-quan.png) | ![Giả định](evidence/360-gia-dinh.png) | ![Đơn thử](evidence/demo-3-don-thu.png) |
+
+## Bản nộp và minh chứng
+Xem [NOP-BAI.md](NOP-BAI.md): link demo, source code, README và minh chứng tại thời điểm chốt (ảnh + video quay màn hình trong [evidence/nop-bai/](evidence/nop-bai/), tag `nop-bai` trên GitHub).
 
 ## Minh chứng quá trình
 - Lịch sử commit: https://github.com/minhquanvibecode/hoi-cho-gian-hang/commits/main
