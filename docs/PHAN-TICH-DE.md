@@ -107,4 +107,4 @@ Hòa vốn = 550.000 ÷ 11.333,33 = 48,53 → **49 phần**.
 
 ## 10. Thông tin triển khai
 - Tên repo: `hoi-cho-gian-hang` (public)
-- Thư mục subdomain cPanel: `hoicho` (ví dụ `https://hoicho.<tên-miền-của-bạn>`)
+- Link chính: GitHub Pages `https://minhquanvibecode.github.io/hoi-cho-gian-hang/` (chủ dự án quyết định bỏ cPanel)

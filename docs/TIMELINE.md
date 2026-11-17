@@ -9,3 +9,4 @@
 - 11:17 — B5 xong — check:mobile đạt 360/390, demo-flow 9/9
 - 11:17 — B6 chốt bản
 - 11:18 — B7 khối nộp bài; Pages đã cập nhật, demo-flow 9/9 trên link thật
+- 11:22 — Bỏ cPanel theo quyết định chủ dự án; GitHub Pages là link chính

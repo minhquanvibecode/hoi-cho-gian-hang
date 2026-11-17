@@ -3,8 +3,7 @@
 Ứng dụng web tiếng Việt giúp nhóm sinh viên lập kế hoạch gian hàng đồ uống và bánh đóng gói: chỉnh giả định, ghi đơn bán thử, biết cần bán bao nhiêu phần để hòa vốn và so sánh kịch bản lượng khách.
 
 ## Link demo
-- Chính (cPanel): _cập nhật sau khi upload_
-- Dự phòng (GitHub Pages): https://minhquanvibecode.github.io/hoi-cho-gian-hang/
+- **https://minhquanvibecode.github.io/hoi-cho-gian-hang/** (GitHub Pages, tự cập nhật mỗi lần push lên `main`)
 - Mở trên điện thoại là dùng được ngay, không cần đăng nhập. Tab **Giả định** → **Nạp dữ liệu mẫu** để khôi phục dữ liệu BTC.
 
 ## Tính năng
@@ -85,7 +84,7 @@ Giả định của đội: mỗi khách mua 1 phần; mức thay đổi trong p
 | Giá ≤ chi phí | Cảnh báo dưới ô; lãi góp bình quân ≤ 0 → "Không thể hòa vốn" |
 
 ## Công nghệ
-Vite + React + TypeScript · Vitest · lưu trên trình duyệt (localStorage) · triển khai cPanel + GitHub Pages (GitHub Actions). Không có máy chủ, không thu thập dữ liệu cá nhân.
+Vite + React + TypeScript · Vitest · lưu trên trình duyệt (localStorage) · triển khai GitHub Pages (GitHub Actions). Không có máy chủ, không thu thập dữ liệu cá nhân.
 
 ## Chạy trên máy
 ```bash
