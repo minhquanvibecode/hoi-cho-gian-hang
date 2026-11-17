@@ -21,6 +21,11 @@
 - **Kế hoạch so với thực tế**: thanh tiến độ đơn thử đã bán / số phần hòa vốn.
 - **Biểu đồ** cột so sánh doanh thu – tổng chi phí – lợi nhuận giữa hai kịch bản.
 - **Lọc đơn bán thử** theo sản phẩm, có tổng số đơn, số phần, doanh thu theo bộ lọc.
+- **Ghi đơn nhanh tại quầy**: chạm ô sản phẩm (hiện giá và số đã bán) + nút số lượng nhanh 1/2/3/5 → 2–3 lần chạm là lưu xong một đơn.
+- **Thanh trượt lượt khách và tỷ lệ mua** ngay trên Tổng quan: kéo là thấy số phần, lợi nhuận, biên an toàn đổi ngay; giá trị lưu chung với tab Giả định.
+- **Thêm / xoá sản phẩm và khoản chi cố định** (có hộp thoại xác nhận; tối đa 8 sản phẩm, 10 khoản chi). Mục đội thêm có nhãn "Đội thêm"; "Nạp dữ liệu mẫu" trả về đúng danh mục BTC.
+- **Xuất CSV** danh sách đơn bán thử theo bộ lọc (có dòng tổng, mở được bằng Excel/Google Sheets).
+- **Bố cục 2 cột trên máy tính** (màn hình từ 900px), vẫn một cột trên điện thoại.
 - **Gợi ý cải thiện** (tính bằng code, so trên kịch bản Thận trọng): tăng giá 2.000 đ, đẩy món lãi góp cao, giảm 10% chi phí cố định — kèm lợi nhuận và điểm hòa vốn trước/sau, cảnh báo đi kèm; số lượt khách tối thiểu để hòa vốn ở từng tỷ lệ mua.
 
 ## Công thức và cách làm tròn
@@ -81,6 +86,7 @@ Giả định của đội: mỗi khách mua 1 phần; mức thay đổi trong p
 | Cơ cấu tính lãi góp bình quân | Theo số phần dự kiến đang dùng (sửa số phần dự kiến → đổi theo) |
 | Nạp mẫu có xoá đơn thử không | Mặc định giữ đơn; hộp thoại có ô "Xoá cả đơn bán thử" |
 | Đổi giá sau khi đã ghi đơn | Đơn giữ giá lúc ghi |
+| Xoá sản phẩm đã có đơn thử | Giữ đơn (doanh thu đơn không đổi); bộ lọc hiện "(đã xoá)" |
 | Giá ≤ chi phí | Cảnh báo dưới ô; lãi góp bình quân ≤ 0 → "Không thể hòa vốn" |
 
 ## Công nghệ
@@ -103,4 +109,6 @@ npm run build      # build ra thư mục dist/
 - Lịch sử commit: https://github.com/minhquanvibecode/hoi-cho-gian-hang/commits/main
 - Nhật ký thời gian: [docs/TIMELINE.md](docs/TIMELINE.md)
 - Phân tích đề: [docs/PHAN-TICH-DE.md](docs/PHAN-TICH-DE.md)
-- Kiểm tra điện thoại: `scripts/check-mobile.mjs`; chạy kịch bản demo tự động: `scripts/demo-flow.mjs` (ảnh trong `evidence/`)
+- Kiểm tra điện thoại: `scripts/check-mobile.mjs`; chạy kịch bản demo tự động (15 bước, gồm cả khổ máy tính 1280px): `scripts/demo-flow.mjs` (ảnh trong `evidence/`)
+
+![Máy tính 1280px](evidence/desktop-1280-tong-quan.png)

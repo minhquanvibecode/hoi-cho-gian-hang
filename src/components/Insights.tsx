@@ -103,7 +103,7 @@ export function SuggestionsCard({ products, costs, scenarios }: { products: Prod
   if (!ref) return null
   const list = suggestions(products, costs, ref)
   return (
-    <section className="card">
+    <section className="card wide">
       <h2>Gợi ý cải thiện lợi nhuận</h2>
       <p className="muted">So trên kịch bản {ref.name} (xấu nhất). Mỗi gợi ý thay một giả định, giữ nguyên phần còn lại.</p>
       <div className="stack">

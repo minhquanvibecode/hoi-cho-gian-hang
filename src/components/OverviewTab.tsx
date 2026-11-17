@@ -1,15 +1,15 @@
-import type { Order } from '../config/seed'
+import { SEED_SCENARIOS, type Order } from '../config/seed'
 import { breakEven, projectPlan, projectScenario, soldSummary, totalPlannedQty, unitMarginVnd, visitorBuffer, type Projection } from '../lib/calc/plan'
 import { formatNumber, formatVnd } from '../lib/format'
 import { countChanged, type Assumptions } from '../state'
-import { How, Progress } from './ui'
+import { How, Progress, Slider } from './ui'
 import { ScenarioChart, SuggestionsCard } from './Insights'
 
-type Props = { a: Assumptions; orders: Order[]; goTo: (tab: string) => void }
+type Props = { a: Assumptions; setA: (fn: (a: Assumptions) => Assumptions) => void; orders: Order[]; goTo: (tab: string) => void }
 
 const signClass = (n: number) => (n > 0 ? 'positive' : n < 0 ? 'negative' : '')
 
-export function OverviewTab({ a, orders, goTo }: Props) {
+export function OverviewTab({ a, setA, orders, goTo }: Props) {
   const { products, fixedCosts, scenarios } = a
   const be = breakEven(products, fixedCosts)
   const plannedTotal = totalPlannedQty(products)
@@ -26,10 +26,10 @@ export function OverviewTab({ a, orders, goTo }: Props) {
 
   return (
     <>
-      <section className={`card assumption-banner ${changed ? 'is-changed' : ''}`}>
+      <section className={`card wide assumption-banner ${changed ? 'is-changed' : ''}`}>
         <div className="row-between">
           <div>
-            <b>{changed === 0 ? 'Giả định: dữ liệu BTC' : `Giả định: đã chỉnh ${changed} ô`}</b>
+            <b>{changed === 0 ? 'Giả định: dữ liệu BTC' : `Giả định: đã thay đổi ${changed} mục`}</b>
             <div className="note">
               {scenarios.map((s) => `${s.name} ${formatNumber(s.visitors)} lượt × ${s.buyRatePct}%`).join(' · ')}
             </div>
@@ -37,6 +37,43 @@ export function OverviewTab({ a, orders, goTo }: Props) {
           <button className="btn" onClick={() => goTo('gia-dinh')}>
             Sửa
           </button>
+        </div>
+      </section>
+
+      <section className="card">
+        <h2>Thử nhanh lượng khách</h2>
+        <p className="muted">Kéo thanh để xem lợi nhuận đổi ngay. Giá trị được lưu vào tab Giả định.</p>
+        <div className="stack">
+          {scenarios.map((s, i) => {
+            const seed = SEED_SCENARIOS.find((x) => x.id === s.id)
+            const p = cols[i].p
+            const setField = (field: 'visitors' | 'buyRatePct', v: number) =>
+              setA((prev) => ({ ...prev, scenarios: prev.scenarios.map((x) => (x.id === s.id ? { ...x, [field]: v } : x)) }))
+            return (
+              <fieldset key={s.id} className="group">
+                <legend>{s.name}</legend>
+                <Slider
+                  label="Lượt khách"
+                  value={s.visitors}
+                  min={0}
+                  max={Math.max(300, s.visitors)}
+                  unit="lượt"
+                  seedValue={seed?.visitors}
+                  onChange={(v) => setField('visitors', v)}
+                />
+                <Slider label="Tỷ lệ mua" value={s.buyRatePct} min={0} max={100} unit="%" seedValue={seed?.buyRatePct} onChange={(v) => setField('buyRatePct', v)} />
+                <p className="line" aria-live="polite">
+                  {formatNumber(p.totalQty)} phần · lợi nhuận <b className={signClass(p.profitVnd)}>{formatVnd(p.profitVnd)}</b>
+                  {p.safetyUnits !== null && (
+                    <>
+                      {' '}
+                      · {p.safetyUnits >= 0 ? `vượt hòa vốn ${formatNumber(p.safetyUnits)} phần` : `thiếu ${formatNumber(-p.safetyUnits)} phần`}
+                    </>
+                  )}
+                </p>
+              </fieldset>
+            )
+          })}
         </div>
       </section>
 
@@ -112,7 +149,7 @@ export function OverviewTab({ a, orders, goTo }: Props) {
         </How>
       </section>
 
-      <section className="card">
+      <section className="card wide">
         <h2>So sánh kịch bản</h2>
         <div className="table-wrap">
           <table className="compare">

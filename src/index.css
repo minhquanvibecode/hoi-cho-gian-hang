@@ -170,3 +170,39 @@ th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: l
 .compare th, .compare td { padding: 8px 4px; }
 .compare th:first-child, .compare td:first-child { position: sticky; left: 0; background: var(--surface); white-space: normal; min-width: 84px; }
 .badge { font-size: 13px; }
+
+/* ===== Ô chạm chọn sản phẩm, số lượng nhanh ===== */
+.field-label { font-size: 14px; color: var(--muted); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.tile {
+  min-height: 84px; padding: 8px; border-radius: 12px; border: 2px solid var(--border); background: var(--surface); color: var(--text);
+  display: grid; align-content: center; gap: 2px; text-align: center; cursor: pointer; font: inherit;
+}
+.tile.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.tile-name { font-weight: 700; font-size: 15px; line-height: 1.25; }
+.tile-price { font-size: 14px; font-variant-numeric: tabular-nums; }
+.tile-sold { font-size: 13px; color: var(--muted); }
+.field.invalid .tile { border-color: var(--bad); }
+.quick-qty { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.btn-selected { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+
+/* ===== Thanh trượt ===== */
+.slider input[type='range'] { padding: 0; border: 0; background: none; accent-color: var(--accent); min-height: var(--tap); }
+.slider-value { color: var(--text); font-variant-numeric: tabular-nums; }
+.field.slider.changed input { background: none; }
+
+/* ===== Máy tính: bố cục 2 cột ===== */
+@media (min-width: 900px) {
+  #root { max-width: 1120px; }
+  .app-header { padding: 16px 24px; }
+  .app-header h1 { font-size: 22px; }
+  .app-main { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; padding-left: 24px; padding-right: 24px; }
+  .app-main > .wide { grid-column: 1 / -1; }
+  .tabbar { max-width: 1120px; left: 50%; right: auto; width: 100%; transform: translateX(-50%); border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .toast { max-width: 520px; }
+  .compare { font-size: 15px; }
+  .compare th, .compare td { padding: 10px 8px; }
+}
+@media (min-width: 900px) { .chart svg { max-width: 420px; margin: 0 auto; } }

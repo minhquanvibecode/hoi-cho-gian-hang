@@ -49,12 +49,13 @@ export default function App() {
         <p className="note">Kế hoạch bán đồ uống & bánh · hòa vốn · kịch bản</p>
       </header>
       <main className="app-main">
-        {tab === 'tong-quan' && <OverviewTab a={a} orders={orders} goTo={goTo} />}
+        {tab === 'tong-quan' && <OverviewTab a={a} setA={setA} orders={orders} goTo={goTo} />}
         {tab === 'gia-dinh' && (
           <AssumptionsTab
             a={a}
             setA={setA}
             orderCount={orders.length}
+            onNotify={(msg) => setToast({ msg })}
             onLoadSeed={(clearOrders) => {
               setAState(seedAssumptions())
               if (clearOrders) setOrders([])
@@ -67,6 +68,7 @@ export default function App() {
             products={a.products}
             orders={orders}
             breakEvenUnits={be.units}
+            onNotify={(msg) => setToast({ msg })}
             onSave={(o) => {
               setOrders((prev) => [o, ...prev])
               setToast({ msg: `Đã lưu đơn: ${o.productName} × ${o.qty} = ${formatVnd(o.priceVnd * o.qty)}` })

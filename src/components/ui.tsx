@@ -165,3 +165,86 @@ export function Progress({ value, max, label }: { value: number; max: number; la
     </div>
   )
 }
+
+/** Ô nhập chữ (tên sản phẩm/khoản chi): không trống, tối đa maxLen ký tự. */
+export function TextField({
+  label,
+  value,
+  onChange,
+  seedValue,
+  maxLen = 40,
+}: {
+  label: string
+  value: string
+  onChange: (s: string) => void
+  seedValue?: string
+  maxLen?: number
+}) {
+  const id = useId()
+  const [draft, setDraft] = useState(value)
+  const [lastValue, setLastValue] = useState(value)
+  const [error, setError] = useState<string | null>(null)
+  if (lastValue !== value) {
+    setLastValue(value)
+    if (draft.trim() !== value) setDraft(value)
+    setError(null)
+  }
+  const changed = seedValue !== undefined && value !== seedValue
+  return (
+    <div className={`field ${error ? 'invalid' : ''} ${changed ? 'changed' : ''}`}>
+      <label htmlFor={id}>
+        {label} {seedValue === undefined ? <span className="badge changed">Đội thêm</span> : changed ? <span className="badge changed">Đã chỉnh</span> : <span className="badge">BTC</span>}
+      </label>
+      <input
+        id={id}
+        value={draft}
+        maxLength={maxLen + 10}
+        aria-invalid={!!error}
+        onChange={(e) => {
+          const s = e.target.value
+          setDraft(s)
+          const t = s.trim()
+          const err = t === '' ? 'Vui lòng nhập tên.' : t.length > maxLen ? `Tối đa ${maxLen} ký tự.` : null
+          setError(err)
+          if (!err) onChange(t)
+        }}
+      />
+      {error && <span className="error">{error}</span>}
+    </div>
+  )
+}
+
+/** Thanh trượt số nguyên, có nhãn BTC/Đã chỉnh. */
+export function Slider({
+  label,
+  value,
+  min,
+  max,
+  unit,
+  seedValue,
+  onChange,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  unit: string
+  seedValue?: number
+  onChange: (n: number) => void
+}) {
+  const id = useId()
+  const changed = seedValue !== undefined && value !== seedValue
+  return (
+    <div className={`field slider ${changed ? 'changed' : ''}`}>
+      <label htmlFor={id} className="row-between">
+        <span>
+          {label} {seedValue !== undefined && (changed ? <span className="badge changed">Đã chỉnh</span> : <span className="badge">BTC</span>)}
+        </span>
+        <b className="slider-value">
+          {formatNumber(value)} {unit}
+        </b>
+      </label>
+      <input id={id} type="range" min={min} max={max} step={1} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </div>
+  )
+}
