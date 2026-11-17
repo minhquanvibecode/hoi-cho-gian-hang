@@ -11,7 +11,7 @@ const MIN_TAP = 44
 const MIN_FONT = 13
 mkdirSync('evidence', { recursive: true })
 
-const browser = await chromium.launch()
+const browser = await chromium.launch(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {})
 let problems = 0
 
 for (const width of widths) {

@@ -165,3 +165,8 @@ th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: l
 .delta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
 :root { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --chart-text: #52514e; --chart-grid: #e4e3df; }
 @media (prefers-color-scheme: dark) { :root { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --chart-text: #c3c2b7; --chart-grid: #383835; } }
+.btn { white-space: nowrap; }
+.compare { font-size: 13px; }
+.compare th, .compare td { padding: 8px 4px; }
+.compare th:first-child, .compare td:first-child { position: sticky; left: 0; background: var(--surface); white-space: normal; min-width: 84px; }
+.badge { font-size: 13px; }

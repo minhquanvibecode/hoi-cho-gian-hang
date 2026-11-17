@@ -20,14 +20,14 @@ export function ScenarioChart({ products, costs, scenarios }: { products: Produc
   const values = data.flatMap((d) => SERIES.map((x) => x.get(d.p)))
   const maxV = Math.max(1, ...values)
   const minV = Math.min(0, ...values)
-  const W = 320
-  const H = 200
-  const top = 18
+  const W = 300
+  const H = 210
+  const top = 24
   const bottom = 28
   const plotH = H - top - bottom
   const y = (v: number) => top + ((maxV - v) / (maxV - minV)) * plotH
   const groupW = W / data.length
-  const barW = 26
+  const barW = 30
   const gap = 2
 
   return (
@@ -64,13 +64,15 @@ export function ScenarioChart({ products, costs, scenarios }: { products: Produc
                     <title>{`${d.s.name} · ${x.label}: ${formatVnd(v)}`}</title>
                     <rect x={bx - 2} y={top - 10} width={barW + 4} height={plotH + 20} fill="transparent" />
                     <rect x={bx} y={Math.min(y0, yv)} width={barW} height={h} rx={4} fill={x.color} opacity={dim ? 0.35 : 1} />
-                    <text x={bx + barW / 2} y={v >= 0 ? yv - 4 : yv + 12} textAnchor="middle" fontSize={10} fill="var(--chart-text)">
-                      {short(v)}
-                    </text>
+                    {x.key !== 'cost' && (
+                      <text x={bx + barW / 2} y={v >= 0 ? yv - 5 : yv + 16} textAnchor="middle" fontSize={14} fontWeight={600} fill="var(--chart-text)">
+                        {short(v)}
+                      </text>
+                    )}
                   </g>
                 )
               })}
-              <text x={cx} y={H - 8} textAnchor="middle" fontSize={13} fontWeight={600} fill="var(--text)">
+              <text x={cx} y={H - 8} textAnchor="middle" fontSize={14} fontWeight={600} fill="var(--text)">
                 {d.s.name}
               </text>
             </g>
