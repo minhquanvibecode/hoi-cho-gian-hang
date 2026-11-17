@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { FixedCost, Product, Scenario } from '../config/seed'
-import { projectScenario, type Projection } from '../lib/calc/plan'
+import { projectPlan, projectScenario, type Projection } from '../lib/calc/plan'
 import { minVisitorsToBreakEven, suggestions } from '../lib/calc/suggest'
-import { formatNumber, formatVnd } from '../lib/format'
+import { formatMillion, formatNumber, formatSignedVnd, formatVnd } from '../lib/format'
 import { How } from './ui'
 
 const SERIES = [
@@ -11,24 +11,30 @@ const SERIES = [
   { key: 'profit', label: 'Lợi nhuận', color: 'var(--s3)', get: (p: Projection) => p.profitVnd },
 ] as const
 
-const short = (n: number) => `${formatNumber(n / 1_000_000, 2)}tr`
-
-/** Biểu đồ cột nhóm: doanh thu, tổng chi phí, lợi nhuận của từng kịch bản. */
+/** Biểu đồ cột nhóm: doanh thu, tổng chi phí, lợi nhuận của từng kịch bản + Kế hoạch (khớp bảng "So sánh kịch bản"). */
 export function ScenarioChart({ products, costs, scenarios }: { products: Product[]; costs: FixedCost[]; scenarios: Scenario[] }) {
   const [hover, setHover] = useState<string | null>(null)
-  const data = scenarios.map((s) => ({ s, p: projectScenario(s, products, costs) }))
+  const data = [
+    ...scenarios.map((s) => ({ id: s.id, name: s.name, p: projectScenario(s, products, costs) })),
+    { id: 'ke-hoach', name: 'Kế hoạch', p: projectPlan(products, costs) },
+  ]
   const values = data.flatMap((d) => SERIES.map((x) => x.get(d.p)))
   const maxV = Math.max(1, ...values)
   const minV = Math.min(0, ...values)
-  const W = 300
-  const H = 210
-  const top = 24
-  const bottom = 28
-  const plotH = H - top - bottom
-  const y = (v: number) => top + ((maxV - v) / (maxV - minV)) * plotH
+  const hasLoss = minV < 0
+  // Kích thước theo px thật ở khổ ~310px để chữ nhãn đúng 13px
+  const W = 310
+  const LABEL = 50 // chỗ cho nhãn xoay dọc
+  const top = LABEL
+  const plotH = 170
+  const below = hasLoss ? LABEL : 0
+  const nameH = 26
+  const H = top + plotH + below + nameH
+  const span = maxV - minV
+  const y = (v: number) => top + ((maxV - v) / span) * plotH
   const groupW = W / data.length
-  const barW = 30
-  const gap = 2
+  const barW = 24
+  const gap = 3
 
   return (
     <section className="card chart">
@@ -40,40 +46,52 @@ export function ScenarioChart({ products, costs, scenarios }: { products: Produc
             {x.label}
           </li>
         ))}
+        {hasLoss && (
+          <li>
+            <i style={{ background: 'var(--bad)' }} />
+            Lỗ (lợi nhuận âm, cột dưới trục 0)
+          </li>
+        )}
       </ul>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="So sánh doanh thu, tổng chi phí, lợi nhuận giữa các kịch bản">
-        {[maxV, (maxV + minV) / 2].map((v) => (
-          <line key={v} x1={0} x2={W} y1={y(v)} y2={y(v)} stroke="var(--chart-grid)" strokeWidth={1} />
-        ))}
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="So sánh doanh thu, tổng chi phí, lợi nhuận giữa các kịch bản và kế hoạch">
+        <line x1={0} x2={W} y1={y(maxV)} y2={y(maxV)} stroke="var(--chart-grid)" strokeWidth={1} />
         <line x1={0} x2={W} y1={y(0)} y2={y(0)} stroke="var(--chart-text)" strokeWidth={1} />
         {data.map((d, gi) => {
           const cx = groupW * gi + groupW / 2
           const start = cx - (SERIES.length * barW + (SERIES.length - 1) * gap) / 2
           return (
-            <g key={d.s.id}>
+            <g key={d.id}>
               {SERIES.map((x, si) => {
                 const v = x.get(d.p)
                 const bx = start + si * (barW + gap)
                 const y0 = y(0)
                 const yv = y(v)
                 const h = Math.max(1, Math.abs(y0 - yv))
-                const id = `${d.s.id}-${x.key}`
+                const id = `${d.id}|${x.key}`
                 const dim = hover !== null && hover !== id
+                const neg = v < 0
+                const lx = bx + barW / 2 + 4.5
+                const ly = neg ? yv + 4 : yv - 4
                 return (
                   <g key={x.key} onMouseEnter={() => setHover(id)} onMouseLeave={() => setHover(null)} onClick={() => setHover(hover === id ? null : id)}>
-                    <title>{`${d.s.name} · ${x.label}: ${formatVnd(v)}`}</title>
-                    <rect x={bx - 2} y={top - 10} width={barW + 4} height={plotH + 20} fill="transparent" />
-                    <rect x={bx} y={Math.min(y0, yv)} width={barW} height={h} rx={4} fill={x.color} opacity={dim ? 0.35 : 1} />
-                    {x.key !== 'cost' && (
-                      <text x={bx + barW / 2} y={v >= 0 ? yv - 5 : yv + 16} textAnchor="middle" fontSize={14} fontWeight={600} fill="var(--chart-text)">
-                        {short(v)}
-                      </text>
-                    )}
+                    <title>{`${d.name} · ${x.label}: ${formatSignedVnd(v)}`}</title>
+                    <rect x={bx - 1} y={0} width={barW + 2} height={H - nameH} fill="transparent" />
+                    <rect x={bx} y={Math.min(y0, yv)} width={barW} height={h} rx={4} fill={neg ? 'var(--bad)' : x.color} opacity={dim ? 0.35 : 1} />
+                    <text
+                      x={lx}
+                      y={ly}
+                      transform={`rotate(-90 ${lx} ${ly})`}
+                      textAnchor={neg ? 'end' : 'start'}
+                      fontSize={13}
+                      fill="var(--chart-text)"
+                    >
+                      {formatMillion(v)}
+                    </text>
                   </g>
                 )
               })}
-              <text x={cx} y={H - 8} textAnchor="middle" fontSize={14} fontWeight={600} fill="var(--text)">
-                {d.s.name}
+              <text x={cx} y={H - 8} textAnchor="middle" fontSize={13} fontWeight={600} fill="var(--text)">
+                {d.name}
               </text>
             </g>
           )
@@ -83,14 +101,16 @@ export function ScenarioChart({ products, costs, scenarios }: { products: Produc
       {hover && (
         <p className="line">
           {(() => {
-            const [sid, key] = [hover.slice(0, hover.lastIndexOf('-')), hover.slice(hover.lastIndexOf('-') + 1)]
-            const d = data.find((x) => x.s.id === sid)
+            const [gid, key] = hover.split('|')
+            const d = data.find((x) => x.id === gid)
             const ser = SERIES.find((x) => x.key === key)
-            return d && ser ? (
+            if (!d || !ser) return null
+            const v = ser.get(d.p)
+            return (
               <>
-                {d.s.name} · {ser.label}: <b>{formatVnd(ser.get(d.p))}</b>
+                {d.name} · {ser.label}: <b className={v < 0 ? 'negative' : ''}>{formatSignedVnd(v)}</b>
               </>
-            ) : null
+            )
           })()}
         </p>
       )}

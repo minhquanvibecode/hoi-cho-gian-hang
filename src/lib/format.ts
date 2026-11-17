@@ -48,3 +48,16 @@ export function allocateLargestRemainder(total: number, weights: number[]): numb
   }
   return floors
 }
+
+/** Số có dấu trừ thật "−" khi âm: -72000 → "−72.000" (dễ đọc, không chỉ dựa vào màu) */
+export const formatSigned = (n: number, digits = 0) => {
+  const r = digits === 0 ? Math.round(n) : n
+  const s = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: digits }).format(Math.abs(r))
+  return r < 0 ? `−${s}` : s
+}
+
+/** -72000 → "−72.000 đ" */
+export const formatSignedVnd = (n: number) => `${formatSigned(n)} đ`
+
+/** Nhãn biểu đồ: 1.090.000 → "1,09tr"; −120.000 → "−0,12tr" */
+export const formatMillion = (n: number) => `${formatSigned(n / 1_000_000, 2)}tr`

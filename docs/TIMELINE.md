@@ -11,3 +11,4 @@
 - 11:18 — B7 khối nộp bài; Pages đã cập nhật, demo-flow 9/9 trên link thật
 - 11:22 — Bỏ cPanel theo quyết định chủ dự án; GitHub Pages là link chính
 - 11:37 — Bổ sung: ghi đơn nhanh, thanh trượt, thêm/xoá SP & khoản chi, 2 cột máy tính, xuất CSV (20 test, demo-flow 15/15)
+- 12:07 — Cải thiện giao diện Tổng quan (dải số, cuộn khi đổi tab, biểu đồ 3 nhóm, báo lỗ) — commit, chưa deploy

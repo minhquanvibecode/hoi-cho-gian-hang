@@ -206,3 +206,22 @@ th, td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: l
   .compare th, .compare td { padding: 10px 8px; }
 }
 @media (min-width: 900px) { .chart svg { max-width: 420px; margin: 0 auto; } }
+
+/* ===== Dải số chính ===== */
+.kpi-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.kpi-strip .kpi { padding: 10px; }
+.kpi-strip .value { font-size: 18px; white-space: nowrap; }
+.kpi-strip .kpi-hero .value { color: var(--accent); }
+@media (max-width: 419px) {
+  /* Điện thoại: 1 ô to ở trên + 2 ô dưới */
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .kpi-strip .kpi-hero { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; }
+  .kpi-strip .kpi-hero .value { font-size: 24px; }
+}
+.loss-tag { font-weight: 700; }
+@media (min-width: 900px) {
+  /* Giữ bố cục 2 cột cũ: "Thử nhanh" bên trái, "Điểm hòa vốn" bên phải */
+  .app-main > .assumption-banner { order: -3; }
+  .app-main > .kpi-strip { order: -2; }
+  .app-main > .sliders-card { order: -1; }
+}

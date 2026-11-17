@@ -1,6 +1,6 @@
 import { SEED_SCENARIOS, type Order } from '../config/seed'
 import { breakEven, projectPlan, projectScenario, soldSummary, totalPlannedQty, unitMarginVnd, visitorBuffer, type Projection } from '../lib/calc/plan'
-import { formatNumber, formatVnd } from '../lib/format'
+import { formatNumber, formatSigned, formatSignedVnd, formatVnd } from '../lib/format'
 import { countChanged, type Assumptions } from '../state'
 import { How, Progress, Slider } from './ui'
 import { ScenarioChart, SuggestionsCard } from './Insights'
@@ -40,42 +40,20 @@ export function OverviewTab({ a, setA, orders, goTo }: Props) {
         </div>
       </section>
 
-      <section className="card">
-        <h2>Thử nhanh lượng khách</h2>
-        <p className="muted">Kéo thanh để xem lợi nhuận đổi ngay. Giá trị được lưu vào tab Giả định.</p>
-        <div className="stack">
-          {scenarios.map((s, i) => {
-            const seed = SEED_SCENARIOS.find((x) => x.id === s.id)
-            const p = cols[i].p
-            const setField = (field: 'visitors' | 'buyRatePct', v: number) =>
-              setA((prev) => ({ ...prev, scenarios: prev.scenarios.map((x) => (x.id === s.id ? { ...x, [field]: v } : x)) }))
-            return (
-              <fieldset key={s.id} className="group">
-                <legend>{s.name}</legend>
-                <Slider
-                  label="Lượt khách"
-                  value={s.visitors}
-                  min={0}
-                  max={Math.max(300, s.visitors)}
-                  unit="lượt"
-                  seedValue={seed?.visitors}
-                  onChange={(v) => setField('visitors', v)}
-                />
-                <Slider label="Tỷ lệ mua" value={s.buyRatePct} min={0} max={100} unit="%" seedValue={seed?.buyRatePct} onChange={(v) => setField('buyRatePct', v)} />
-                <p className="line" aria-live="polite">
-                  {formatNumber(p.totalQty)} phần · lợi nhuận <b className={signClass(p.profitVnd)}>{formatVnd(p.profitVnd)}</b>
-                  {p.safetyUnits !== null && (
-                    <>
-                      {' '}
-                      · {p.safetyUnits >= 0 ? `vượt hòa vốn ${formatNumber(p.safetyUnits)} phần` : `thiếu ${formatNumber(-p.safetyUnits)} phần`}
-                    </>
-                  )}
-                </p>
-              </fieldset>
-            )
-          })}
+      <div className="wide kpi-strip" aria-label="Số chính">
+        <div className="kpi kpi-hero">
+          <div className="label">Hòa vốn</div>
+          <div className="value">{be.units === null ? 'Không thể' : `${formatNumber(be.units)} phần`}</div>
         </div>
-      </section>
+        {cols.slice(0, scenarios.length).map((c) => (
+          <div className="kpi" key={c.name}>
+            <div className="label">
+              {c.p.profitVnd < 0 ? 'Lỗ' : 'Lãi'} {c.name}
+            </div>
+            <div className={`value ${signClass(c.p.profitVnd)}`}>{formatSignedVnd(c.p.profitVnd)}</div>
+          </div>
+        ))}
+      </div>
 
       <section className="card">
         <h2>Điểm hòa vốn</h2>
@@ -149,6 +127,37 @@ export function OverviewTab({ a, setA, orders, goTo }: Props) {
         </How>
       </section>
 
+      <section className="card sliders-card">
+        <h2>Thử nhanh lượng khách</h2>
+        <p className="muted">Kéo thanh để xem lợi nhuận đổi ngay. Giá trị được lưu vào tab Giả định.</p>
+        <div className="stack">
+          {scenarios.map((s, i) => {
+            const seed = SEED_SCENARIOS.find((x) => x.id === s.id)
+            const p = cols[i].p
+            const setField = (field: 'visitors' | 'buyRatePct', v: number) =>
+              setA((prev) => ({ ...prev, scenarios: prev.scenarios.map((x) => (x.id === s.id ? { ...x, [field]: v } : x)) }))
+            return (
+              <fieldset key={s.id} className="group">
+                <legend>{s.name}</legend>
+                <Slider
+                  label="Lượt khách"
+                  value={s.visitors}
+                  min={0}
+                  max={Math.max(300, s.visitors)}
+                  unit="lượt"
+                  seedValue={seed?.visitors}
+                  onChange={(v) => setField('visitors', v)}
+                />
+                <Slider label="Tỷ lệ mua" value={s.buyRatePct} min={0} max={100} unit="%" seedValue={seed?.buyRatePct} onChange={(v) => setField('buyRatePct', v)} />
+                <p className="line" aria-live="polite">
+                  <ResultLine p={p} />
+                </p>
+              </fieldset>
+            )
+          })}
+        </div>
+      </section>
+
       <section className="card wide">
         <h2>So sánh kịch bản</h2>
         <div className="table-wrap">
@@ -200,7 +209,8 @@ export function OverviewTab({ a, setA, orders, goTo }: Props) {
                 <td>Lợi nhuận</td>
                 {cols.map((c) => (
                   <td key={c.name} className={`num ${signClass(c.p.profitVnd)}`}>
-                    {formatNumber(c.p.profitVnd)}
+                    {c.p.profitVnd < 0 && <span className="loss-tag">Lỗ </span>}
+                    {formatSigned(c.p.profitVnd)}
                   </td>
                 ))}
               </tr>
@@ -208,7 +218,7 @@ export function OverviewTab({ a, setA, orders, goTo }: Props) {
                 <td>Biên an toàn (phần)</td>
                 {cols.map((c) => (
                   <td key={c.name} className={`num ${signClass(c.p.safetyUnits ?? -1)}`}>
-                    {c.p.safetyUnits === null ? '—' : formatNumber(c.p.safetyUnits)}
+                    {c.p.safetyUnits === null ? '—' : formatSigned(c.p.safetyUnits)}
                   </td>
                 ))}
               </tr>
@@ -241,8 +251,8 @@ function ScenarioCard({ name, note, p, visitors, rate }: { name: string; note: s
           <div className="value">{formatVnd(p.revenueVnd)}</div>
         </div>
         <div className="kpi">
-          <div className="label">Lợi nhuận dự kiến</div>
-          <div className={`value ${signClass(p.profitVnd)}`}>{formatVnd(p.profitVnd)}</div>
+          <div className="label">{p.profitVnd < 0 ? 'Lỗ dự kiến' : 'Lợi nhuận dự kiến'}</div>
+          <div className={`value ${signClass(p.profitVnd)}`}>{formatSignedVnd(p.profitVnd)}</div>
         </div>
         <div className="kpi">
           <div className="label">Tổng CP biến đổi</div>
@@ -251,16 +261,20 @@ function ScenarioCard({ name, note, p, visitors, rate }: { name: string; note: s
         <div className="kpi">
           <div className="label">Biên an toàn</div>
           <div className={`value ${signClass(p.safetyUnits ?? -1)}`}>
-            {p.safetyUnits === null ? '—' : `${formatNumber(p.safetyUnits)} phần`}
+            {p.safetyUnits === null ? '—' : `${formatSigned(p.safetyUnits)} phần`}
           </div>
         </div>
       </div>
-      <p className="line top">
-        {p.safetyUnits === null
-          ? 'Không thể hòa vốn với giá và chi phí hiện tại.'
-          : p.safetyUnits >= 0
-            ? `Bán ${formatNumber(p.totalQty)} phần, vượt điểm hòa vốn ${formatNumber(p.safetyUnits)} phần (≈ ${formatNumber(visitorBuffer(p.safetyUnits, rate) ?? 0)} lượt khách có thể hụt mà vẫn không lỗ).`
-            : `Bán ${formatNumber(p.totalQty)} phần, còn thiếu ${formatNumber(-p.safetyUnits)} phần để hòa vốn.`}
+      <p className={`line top ${p.profitVnd < 0 ? 'negative' : ''}`}>
+        {p.profitVnd < 0 ? (
+          <>
+            Bán {formatNumber(p.totalQty)} phần → <ResultLine p={p} />
+          </>
+        ) : p.safetyUnits === null ? (
+          'Không thể hòa vốn với giá và chi phí hiện tại.'
+        ) : (
+          `Bán ${formatNumber(p.totalQty)} phần, vượt điểm hòa vốn ${formatNumber(Math.max(0, p.safetyUnits))} phần (≈ ${formatNumber(visitorBuffer(Math.max(0, p.safetyUnits), rate) ?? 0)} lượt khách có thể hụt mà vẫn không lỗ).`
+        )}
       </p>
       <div className="table-wrap">
         <table>
@@ -314,5 +328,33 @@ function ScenarioCard({ name, note, p, visitors, rate }: { name: string; note: s
         )}
       </How>
     </section>
+  )
+}
+
+/** Dòng kết quả một kịch bản. Lãi: "N phần · lợi nhuận X · vượt hòa vốn N phần" (xanh). Lỗ: "Lỗ X đ · thiếu N phần để hòa vốn" (đỏ). */
+function ResultLine({ p }: { p: Projection }) {
+  if (p.profitVnd < 0) {
+    const shortBy = p.safetyUnits !== null && p.safetyUnits < 0 ? -p.safetyUnits : null
+    return (
+      <b className="negative">
+        Lỗ {formatVnd(-p.profitVnd)}
+        {shortBy !== null
+          ? ` · thiếu ${formatNumber(shortBy)} phần để hòa vốn`
+          : p.breakEvenUnits === null
+            ? ' · không thể hòa vốn với giá hiện tại'
+            : ' · cơ cấu món lệch so với dự kiến'}
+      </b>
+    )
+  }
+  return (
+    <>
+      {formatNumber(p.totalQty)} phần · lợi nhuận <b className={signClass(p.profitVnd)}>{formatVnd(p.profitVnd)}</b>
+      {p.safetyUnits !== null && p.safetyUnits >= 0 && (
+        <>
+          {' '}
+          · <span className="positive">vượt hòa vốn {formatNumber(p.safetyUnits)} phần</span>
+        </>
+      )}
+    </>
   )
 }

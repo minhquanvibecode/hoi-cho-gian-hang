@@ -28,7 +28,11 @@ export default function App() {
   const closeToast = useCallback(() => setToast(null), [])
 
   useEffect(() => {
-    const onHash = () => setTab(readHash())
+    // Đổi hash (#gia-dinh, #don-thu…) → đổi tab và cuộn về đầu. Tải lại trang không phát sự kiện này nên không cuộn.
+    const onHash = () => {
+      setTab(readHash())
+      window.scrollTo({ top: 0 })
+    }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
